@@ -1,18 +1,18 @@
 {
+  "vimeo": "",
+  "summary": "",
   "slug": "data-viz-2024",
+  "published": false,
+  "desc": "تصوير بصري لمجموعات بيانات ضخمة.",
+  "outcome": "",
   "title": "Data Visualization",
-  "year": "2024",
-  "field": "academic",
   "tags": [
     "Python",
     "Visualization"
   ],
-  "desc": "تصوير بصري لمجموعات بيانات ضخمة.",
-  "summary": "",
-  "problem": "",
   "solution": "",
-  "outcome": "",
-  "vimeo": "",
   "links": [],
-  "published": true
+  "field": "academic",
+  "year": "2024",
+  "problem": ""
 }
