@@ -1,140 +1,42 @@
 import { useState, useEffect } from "react";
 
 /* ══════════════════════════════════════════════════════════════
-   DATA — عدّل هنا فقط لتحديث الموقع
+   استيراد المحتوى من ملفات JSON (يُدار من لوحة التحكم)
+══════════════════════════════════════════════════════════════ */
+const projectFiles = import.meta.glob('./content/projects/*.json', { eager: true });
+const postFiles    = import.meta.glob('./content/posts/*.json',    { eager: true });
+
+const ALL_PROJECTS = Object.values(projectFiles)
+  .map(m => m.default ?? m)
+  .filter(p => p.published !== false)
+  .sort((a, b) => Number(b.year) - Number(a.year));
+
+const ALL_POSTS = Object.values(postFiles)
+  .map(m => m.default ?? m)
+  .filter(p => p.published !== false)
+  .sort((a, b) => new Date(b.date) - new Date(a.date));
+
+/* ══════════════════════════════════════════════════════════════
+   DATA الثابتة — عدّل هنا فقط
 ══════════════════════════════════════════════════════════════ */
 const ME = {
-  nameEn: "Feras Almalki",
   roles: ["إحصائي", "مونتير", "مطوّر"],
   bio: "أشتغل في المكان اللي تلتقي فيه البيانات مع الإبداع. أحلل الأرقام، وأحكي القصص، وأبني الأدوات.",
   email: "Feras.almalki00@gmail.com",
   socials: [
-    { id: "li", label: "LinkedIn", url: "https://www.linkedin.com/in/feras-al-malki-756360197" },
-    { id: "gh", label: "GitHub",   url: "https://www.github.com/FerasK0" },
-    { id: "tw", label: "Twitter",  url: "https://www.Twitter.com/dcwlx" },
-    { id: "ig", label: "Instagram",url: "https://www.instagram.com/dcwlx" },
-    { id: "tg", label: "Telegram", url: "https://t.me/Fras1z" },
+    { id: "li", label: "LinkedIn",  url: "https://www.linkedin.com/in/feras-al-malki-756360197" },
+    { id: "gh", label: "GitHub",    url: "https://www.github.com/FerasK0" },
+    { id: "tw", label: "Twitter",   url: "https://www.Twitter.com/dcwlx" },
+    { id: "ig", label: "Instagram", url: "https://www.instagram.com/dcwlx" },
+    { id: "tg", label: "Telegram",  url: "https://t.me/Fras1z" },
   ],
 };
 
-/* ── كل مشروع له صفحة خاصة — عدّل slug و details لكل مشروع ── */
-const FIELDS = [
+const FIELD_META = [
+  { id: "academic", ar: "أكاديمي", en: "Academic & Research", tagline: "إحصاء وبيانات وأبحاث" },
+  { id: "tech",     ar: "تقني",    en: "Technology",          tagline: "برمجة وأدوات وتطوير" },
   {
-    id: "academic",
-    ar: "أكاديمي",
-    en: "Academic & Research",
-    tagline: "إحصاء وبيانات وأبحاث",
-    /* أحدث مشروع أضيف — يظهر في قسم "أبرز الأعمال" بالرئيسية */
-    latestIndex: 1,
-    projects: [
-      {
-        slug: "ksu-autofill",
-        title: "Auto Fill — استمارة KSU",
-        year: "2023",
-        tags: ["JavaScript", "Automation"],
-        desc: "أداة تعبئة تلقائية لاستمارة جامعة الملك سعود.",
-        /* صفحة المشروع — عدّل هذا القسم لاحقاً */
-        details: {
-          summary: "أداة تعمل في الخلفية لتعبئة استمارات KSU تلقائياً.",
-          problem: "",
-          solution: "",
-          outcome: "",
-          links: [],
-          media: null,
-        },
-      },
-      {
-        slug: "data-viz-2024",
-        title: "Data Visualization",
-        year: "2024",
-        tags: ["Python", "Visualization"],
-        desc: "تصوير بصري لمجموعات بيانات ضخمة باستخدام Python.",
-        details: {
-          summary: "تصور بيانات معقدة في شكل مفهوم وجميل.",
-          problem: "",
-          solution: "",
-          outcome: "",
-          links: [],
-          media: null,
-        },
-      },
-      {
-        slug: "stat-research",
-        title: "تحليل بيانات إحصائي",
-        year: "2024",
-        tags: ["R", "Statistics"],
-        desc: "مشاريع بحثية في تحليل مجموعات بيانات معقدة باستخدام R.",
-        details: {
-          summary: "",
-          problem: "",
-          solution: "",
-          outcome: "",
-          links: [],
-          media: null,
-        },
-      },
-    ],
-  },
-  {
-    id: "tech",
-    ar: "تقني",
-    en: "Technology",
-    tagline: "برمجة وأدوات وتطوير",
-    latestIndex: 0,
-    projects: [
-      {
-        slug: "media-bot",
-        title: "Media Downloader Bot",
-        year: "2024",
-        tags: ["Python", "Telegram API"],
-        desc: "بوت تيليغرام لتنزيل الميديا من منصات متعددة.",
-        details: {
-          summary: "بوت يدعم تنزيل الميديا من يوتيوب وتويتر وانستغرام. يستخدمه مئات المستخدمين.",
-          problem: "",
-          solution: "",
-          outcome: "",
-          links: [{ label: "الكود على GitHub", url: "https://github.com/FerasK0" }],
-          media: null,
-        },
-      },
-      {
-        slug: "masstxt",
-        title: "MassTxt Translator",
-        year: "2023",
-        tags: ["Python", "NLP"],
-        desc: "ترجمة ملفات نصية ضخمة دفعةً واحدة.",
-        details: {
-          summary: "",
-          problem: "",
-          solution: "",
-          outcome: "",
-          links: [],
-          media: null,
-        },
-      },
-      {
-        slug: "cities-ar",
-        title: "Cities Skylines II — عربي",
-        year: "2024",
-        tags: ["Localization", "Gaming"],
-        desc: "ترجمة عربية كاملة للعبة Cities Skylines II.",
-        details: {
-          summary: "",
-          problem: "",
-          solution: "",
-          outcome: "",
-          links: [],
-          media: null,
-        },
-      },
-    ],
-  },
-  {
-    id: "creative",
-    ar: "إبداعي",
-    en: "Creative",
-    tagline: "مونتاج وحركة وإنتاج",
-    latestIndex: 0,
+    id: "creative", ar: "إبداعي",  en: "Creative",            tagline: "مونتاج وحركة وإنتاج",
     clients: [
       { name: "مدفوع",               img: "https://ferask0.github.io/Portfolio/images/madfu.png" },
       { name: "هيئة الأمن السيبراني", img: "https://ferask0.github.io/Portfolio/images/NationalCybersecurityAuthority.png" },
@@ -146,82 +48,16 @@ const FIELDS = [
       { name: "ولاء",                img: "https://ferask0.github.io/Portfolio/images/Walaa.png" },
       { name: "أليين",               img: "https://ferask0.github.io/Portfolio/images/aleen-logo-white.png" },
     ],
-    projects: [
-      {
-        slug: "mothhelah-founding",
-        title: "Mothhelah — يوم التأسيس",
-        year: "2025",
-        tags: ["Motion Design", "Corporate"],
-        desc: "فيديو احتفالي ليوم تأسيس شركة مثيلة.",
-        details: {
-          summary: "مزيج بين الهوية البصرية والحركة والإيقاع لليوم التأسيسي.",
-          problem: "",
-          solution: "",
-          outcome: "",
-          links: [],
-          media: { type: "vimeo", id: "1076534050" },
-        },
-      },
-      {
-        slug: "kamelna",
-        title: "Kamelna",
-        year: "2025",
-        tags: ["Commercial"],
-        desc: "إنتاج فيديو إعلاني احترافي.",
-        details: {
-          summary: "",
-          problem: "",
-          solution: "",
-          outcome: "",
-          links: [],
-          media: { type: "vimeo", id: "1105850292" },
-        },
-      },
-      {
-        slug: "aleen",
-        title: "Aleen",
-        year: "2025",
-        tags: ["Brand", "Motion"],
-        desc: "فيديو تسويقي لعلامة أليين.",
-        details: {
-          summary: "",
-          problem: "",
-          solution: "",
-          outcome: "",
-          links: [],
-          media: { type: "vimeo", id: "1076534220" },
-        },
-      },
-      {
-        slug: "walaa",
-        title: "Walaa Insurance",
-        year: "2025",
-        tags: ["Ad", "Insurance"],
-        desc: "إعلان شركة ولاء للتأمين.",
-        details: {
-          summary: "",
-          problem: "",
-          solution: "",
-          outcome: "",
-          links: [],
-          media: { type: "vimeo", id: "1105849478" },
-        },
-      },
-    ],
   },
 ];
 
-/* ── المدونة — أضف مقالاتك هنا ── */
-const POSTS = [
-  {
-    slug: "first-post",
-    title: "أول مقال",
-    date: "2025-05-01",
-    excerpt: "هذا مثال على مقال. عدّله من ملف البيانات.",
-    body: "اكتب محتوى المقال هنا. يدعم نصاً طويلاً وفقرات متعددة.",
-    tags: ["عام"],
-  },
-];
+/* دمج الميتا مع المشاريع من الملفات */
+function buildFields() {
+  return FIELD_META.map(meta => ({
+    ...meta,
+    projects: ALL_PROJECTS.filter(p => p.field === meta.id),
+  }));
+}
 
 /* ══════════════════════════════════════════════════════════════
    CSS
@@ -230,17 +66,13 @@ const CSS = `
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
 
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-
 :root{
   --ink:#111010;--ink2:#3a3836;--ink3:#7a7774;
   --paper:#f5f2ed;--paper2:#edeae4;--paper3:#e2ddd6;
-  --rule:rgba(0,0,0,0.1);
-  --accent:#c8441a;
-  --ff:'IBM Plex Sans Arabic',sans-serif;
-  --fm:'IBM Plex Mono',monospace;
+  --rule:rgba(0,0,0,0.1);--accent:#c8441a;
+  --ff:'IBM Plex Sans Arabic',sans-serif;--fm:'IBM Plex Mono',monospace;
   --t:all 0.22s ease;
 }
-
 html{scroll-behavior:smooth}
 body{font-family:var(--ff);background:var(--paper);color:var(--ink);direction:rtl;line-height:1.65;-webkit-font-smoothing:antialiased}
 ::-webkit-scrollbar{width:3px}
@@ -250,12 +82,12 @@ body{font-family:var(--ff);background:var(--paper);color:var(--ink);direction:rt
 .nav{position:fixed;top:0;left:0;right:0;z-index:200;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;background:var(--paper);border-bottom:1px solid var(--rule)}
 .nav-logo{font-family:var(--fm);font-size:1rem;font-weight:500;letter-spacing:-0.5px;color:var(--ink);cursor:pointer;text-decoration:none}
 .nav-logo span{color:var(--accent)}
-.nav-right{display:flex;align-items:center;gap:0}
+.nav-right{display:flex;align-items:center}
 .nav-link{padding:8px 14px;font-size:0.82rem;color:var(--ink3);background:none;border:none;cursor:pointer;font-family:var(--ff);transition:color 0.18s;white-space:nowrap}
-.nav-link:hover,.nav-link.active{color:var(--ink)}
+.nav-link:hover{color:var(--ink)}
 .nav-divider{width:1px;height:18px;background:var(--rule)}
 .hamburger{display:none;flex-direction:column;gap:4px;background:none;border:none;cursor:pointer;padding:6px}
-.hamburger span{display:block;width:20px;height:1.5px;background:var(--ink);transition:var(--t)}
+.hamburger span{display:block;width:20px;height:1.5px;background:var(--ink)}
 .mob-menu{display:none;position:fixed;top:56px;left:0;right:0;background:var(--paper);border-bottom:1px solid var(--rule);padding:0.5rem 0;z-index:199;flex-direction:column}
 .mob-menu.open{display:flex}
 .mob-link{padding:12px 2rem;font-size:0.9rem;color:var(--ink2);background:none;border:none;cursor:pointer;text-align:right;font-family:var(--ff);transition:color 0.18s}
@@ -265,16 +97,16 @@ body{font-family:var(--ff);background:var(--paper);color:var(--ink);direction:rt
 .hero{padding:120px 2rem 80px;max-width:880px;margin:0 auto}
 .hero-name{font-size:clamp(3.2rem,9vw,7rem);font-weight:600;line-height:1;letter-spacing:-2px;color:var(--ink);margin-bottom:1.5rem}
 .hero-name em{font-style:normal;color:var(--accent)}
-.hero-roles{display:flex;gap:0;flex-wrap:wrap;border-top:1px solid var(--rule);padding-top:1.25rem;margin-bottom:2.5rem}
+.hero-roles{display:flex;flex-wrap:wrap;border-top:1px solid var(--rule);padding-top:1.25rem;margin-bottom:2.5rem}
 .hero-role{font-size:0.82rem;color:var(--ink3);padding:0 1.25rem;border-right:1px solid var(--rule)}
 .hero-role:last-child{border-left:1px solid var(--rule)}
 .hero-bio{font-size:clamp(1rem,2.5vw,1.2rem);color:var(--ink2);max-width:520px;line-height:1.75;margin-bottom:3rem;font-weight:300}
-.hero-actions{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap}
 
 /* BUTTONS */
-.btn-ink{padding:10px 22px;background:var(--ink);color:var(--paper);border:1px solid var(--ink);border-radius:3px;font-size:0.85rem;font-family:var(--ff);cursor:pointer;transition:var(--t);text-decoration:none;display:inline-block}
-.btn-ink:hover{background:var(--ink2);border-color:var(--ink2)}
-.btn-ghost{padding:10px 22px;background:transparent;color:var(--ink);border:1px solid var(--rule);border-radius:3px;font-size:0.85rem;font-family:var(--ff);cursor:pointer;transition:var(--t);text-decoration:none;display:inline-block}
+.btn-ink{padding:10px 22px;background:var(--ink);color:var(--paper);border:1px solid var(--ink);border-radius:3px;font-size:0.85rem;font-family:var(--ff);cursor:pointer;transition:var(--t)}
+.btn-ink:hover{background:var(--ink2)}
+.btn-ghost{padding:10px 22px;background:transparent;color:var(--ink);border:1px solid var(--rule);border-radius:3px;font-size:0.85rem;font-family:var(--ff);cursor:pointer;transition:var(--t)}
 .btn-ghost:hover{border-color:var(--ink3)}
 
 /* SECTION */
@@ -334,7 +166,7 @@ body{font-family:var(--ff);background:var(--paper);color:var(--ink);direction:rt
 .proj-tags{display:flex;gap:5px;flex-wrap:wrap;justify-content:flex-end;padding-top:3px}
 .proj-arrow{font-size:0.9rem;color:var(--ink3);padding-top:3px}
 
-/* CLIENTS (inside creative page) */
+/* CLIENTS */
 .clients-bg{background:var(--paper2);border-top:1px solid var(--rule);overflow:hidden;padding:3rem 0;width:100%}
 .clients-label{font-family:var(--fm);font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--ink3);text-align:center;margin-bottom:2rem}
 .clients-scroll{overflow:hidden;position:relative}
@@ -346,9 +178,9 @@ body{font-family:var(--ff);background:var(--paper);color:var(--ink);direction:rt
 .client-img{height:32px;opacity:0.3;filter:grayscale(1);transition:var(--t);flex-shrink:0}
 .client-img:hover{opacity:0.7}
 
-/* PROJECT PAGE (blog-style) */
+/* PROJECT PAGE */
 .pp-wrap{max-width:680px;margin:0 auto;padding:100px 2rem 6rem}
-.pp-back{font-family:var(--fm);font-size:0.78rem;color:var(--ink3);background:none;border:none;cursor:pointer;padding:0;margin-bottom:2.5rem;transition:color 0.18s}
+.pp-back{font-family:var(--fm);font-size:0.78rem;color:var(--ink3);background:none;border:none;cursor:pointer;padding:0;margin-bottom:2.5rem;transition:color 0.18s;display:block}
 .pp-back:hover{color:var(--ink)}
 .pp-field{font-family:var(--fm);font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:0.75rem}
 .pp-title{font-size:clamp(1.8rem,5vw,3rem);font-weight:600;letter-spacing:-1px;color:var(--ink);margin-bottom:0.5rem;line-height:1.1}
@@ -380,23 +212,26 @@ body{font-family:var(--ff);background:var(--paper);color:var(--ink);direction:rt
 .post-wrap{max-width:640px;margin:0 auto;padding:100px 2rem 6rem}
 .post-body{font-size:1rem;color:var(--ink2);line-height:1.9;font-weight:300;margin-top:2rem;white-space:pre-wrap}
 
+/* EMPTY STATE */
+.empty-state{text-align:center;padding:4rem 2rem;color:var(--ink3);font-size:0.9rem}
+
 /* CONTACT */
 .contact-wrap{max-width:880px;margin:0 auto;padding:0 2rem 8rem}
 .contact-big{font-size:clamp(1.4rem,4vw,3.5rem);font-weight:600;letter-spacing:-1px;line-height:1.15;color:var(--ink);margin-bottom:2.5rem;word-break:break-word}
 .contact-big a{color:var(--accent);text-decoration:none;transition:opacity 0.18s;font-size:clamp(0.95rem,2.5vw,2rem)}
 .contact-big a:hover{opacity:0.75}
-.contact-socials{display:flex;flex-wrap:wrap;gap:0;border-top:1px solid var(--rule);padding-top:1.5rem;align-items:center}
+.contact-socials{display:flex;flex-wrap:wrap;border-top:1px solid var(--rule);padding-top:1.5rem;align-items:center}
 .csoc{font-family:var(--fm);font-size:0.78rem;color:var(--ink3);text-decoration:none;transition:color 0.18s;padding:0 1.25rem;border-right:1px solid var(--rule)}
 .csoc:first-child{padding-right:0}
 .csoc:last-child{border-right:none}
 .csoc:hover{color:var(--ink);text-decoration:underline}
 
-/* VIDEO MODAL */
+/* MODAL */
 .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,0.88);z-index:500;display:flex;align-items:center;justify-content:center;padding:2rem}
 .modal-inner{width:100%;max-width:820px}
 .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
 .modal-title{font-size:0.9rem;color:rgba(245,242,237,0.7);font-family:var(--fm)}
-.modal-close{background:none;border:none;color:rgba(245,242,237,0.6);font-size:1.5rem;cursor:pointer;line-height:1;transition:color 0.18s}
+.modal-close{background:none;border:none;color:rgba(245,242,237,0.6);font-size:1.5rem;cursor:pointer;line-height:1}
 .modal-close:hover{color:white}
 .modal-video{width:100%;aspect-ratio:16/9}
 .modal-video iframe{width:100%;height:100%;border:none}
@@ -406,12 +241,10 @@ footer{border-top:1px solid var(--rule);padding:1.5rem 2rem;display:flex;justify
 footer p{font-family:var(--fm);font-size:0.72rem;color:var(--ink3)}
 footer span{color:var(--ink)}
 
-/* ANIMATIONS */
 @keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
 @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 .fade-up{animation:fadeUp 0.4s ease both}
 
-/* RESPONSIVE */
 @media(max-width:700px){
   .nav-right{display:none}
   .hamburger{display:flex}
@@ -432,6 +265,10 @@ footer span{color:var(--ink)}
 /* ══════════════════════════════════════════════════════════════
    HELPERS
 ══════════════════════════════════════════════════════════════ */
+function fieldIcon(id) {
+  return id === "academic" ? "📊" : id === "tech" ? "⚡" : "🎬";
+}
+
 function VimeoEmbed({ id, playing, onPlay }) {
   return (
     <div className="feat-video">
@@ -448,43 +285,17 @@ function VimeoEmbed({ id, playing, onPlay }) {
   );
 }
 
-function VideoModal({ project, onClose }) {
-  useEffect(() => {
-    const fn = e => e.key === "Escape" && onClose();
-    window.addEventListener("keydown", fn);
-    return () => window.removeEventListener("keydown", fn);
-  }, []);
-  return (
-    <div className="modal-backdrop" onClick={e => e.target === e.currentTarget && onClose()}>
-      <div className="modal-inner">
-        <div className="modal-header">
-          <span className="modal-title">{project.title}</span>
-          <button className="modal-close" onClick={onClose}>×</button>
-        </div>
-        <div className="modal-video">
-          <iframe src={`https://player.vimeo.com/video/${project.details.media.id}?autoplay=1`} allow="autoplay; fullscreen" title={project.title} />
-        </div>
-      </div>
-    </div>
-  );
-}
-
-function fieldIcon(id) {
-  return id === "academic" ? "📊" : id === "tech" ? "⚡" : "🎬";
-}
-
 /* ══════════════════════════════════════════════════════════════
    HOME
 ══════════════════════════════════════════════════════════════ */
 function HomePage({ nav, scrollToContact }) {
-  /* أحدث عمل مضاف — من المجال الإبداعي */
+  const FIELDS = buildFields();
   const creativeField = FIELDS.find(f => f.id === "creative");
-  const latestProject = creativeField.projects[creativeField.latestIndex];
+  const latestCreative = creativeField?.projects[0];
   const [playing, setPlaying] = useState(false);
 
   return (
     <>
-      {/* HERO */}
       <section className="hero">
         <h1 className="hero-name"><em>فراس</em><br/>المالكي</h1>
         <div className="hero-roles">
@@ -497,49 +308,45 @@ function HomePage({ nav, scrollToContact }) {
         </div>
       </section>
 
-      {/* أحدث عمل */}
-      <div className="featured-strip">
-        <div className="featured-inner">
-          <div>
-            <p className="feat-label">أحدث الأعمال</p>
-            <p className="feat-eyebrow">{creativeField.ar} · {latestProject.year}</p>
-            <h2 className="feat-title">{latestProject.title}</h2>
-            <p className="feat-desc">{latestProject.desc}</p>
-            <div className="feat-tags">{latestProject.tags.map(t => <span key={t} className="tag">{t}</span>)}</div>
-            <button className="btn-ghost" onClick={() => nav("field", "creative")}>استعرض المجال الإبداعي ←</button>
+      {latestCreative && (
+        <div className="featured-strip">
+          <div className="featured-inner">
+            <div>
+              <p className="feat-label">أحدث الأعمال</p>
+              <p className="feat-eyebrow">{creativeField.ar} · {latestCreative.year}</p>
+              <h2 className="feat-title">{latestCreative.title}</h2>
+              <p className="feat-desc">{latestCreative.desc}</p>
+              <div className="feat-tags">{(latestCreative.tags || []).map(t => <span key={t} className="tag">{t}</span>)}</div>
+              <button className="btn-ghost" onClick={() => nav("field", "creative")}>استعرض المجال الإبداعي ←</button>
+            </div>
+            {latestCreative.vimeo ? (
+              <VimeoEmbed id={latestCreative.vimeo} playing={playing} onPlay={() => setPlaying(true)} />
+            ) : (
+              <div className="feat-placeholder">{fieldIcon("creative")}</div>
+            )}
           </div>
-          {latestProject.details.media?.type === "vimeo" ? (
-            <VimeoEmbed id={latestProject.details.media.id} playing={playing} onPlay={() => setPlaying(true)} />
-          ) : (
-            <div className="feat-placeholder">{fieldIcon("creative")}</div>
-          )}
         </div>
-      </div>
+      )}
 
-      {/* المجالات */}
       <section className="section" id="work">
         <hr className="section-rule" />
         <p className="section-num">01 — المجالات</p>
         <h2 className="section-title" style={{ marginBottom: "2.5rem" }}>ماذا أعمل</h2>
         <div className="fields-list">
-          {FIELDS.map((f, i) => {
-            const latest = f.projects[f.latestIndex];
-            return (
-              <div key={f.id} className="field-row" onClick={() => nav("field", f.id)} role="button" tabIndex={0} onKeyDown={e => e.key === "Enter" && nav("field", f.id)}>
-                <div>
-                  <p className="field-row-num">0{i + 1}</p>
-                  <h3 className="field-row-title">{f.ar}</h3>
-                  <p className="field-row-sub">{f.en}</p>
-                </div>
-                <p className="field-row-desc">{latest.desc}</p>
-                <span className="field-row-arrow">←</span>
+          {FIELDS.map((f, i) => (
+            <div key={f.id} className="field-row" onClick={() => nav("field", f.id)} role="button" tabIndex={0} onKeyDown={e => e.key === "Enter" && nav("field", f.id)}>
+              <div>
+                <p className="field-row-num">0{i + 1}</p>
+                <h3 className="field-row-title">{f.ar}</h3>
+                <p className="field-row-sub">{f.en}</p>
               </div>
-            );
-          })}
+              <p className="field-row-desc">{f.projects[0]?.desc || f.tagline}</p>
+              <span className="field-row-arrow">←</span>
+            </div>
+          ))}
         </div>
       </section>
 
-      {/* تواصل */}
       <section className="section" id="contact">
         <hr className="section-rule" />
         <p className="section-num">02 — تواصل</p>
@@ -562,12 +369,12 @@ function HomePage({ nav, scrollToContact }) {
    FIELD PAGE
 ══════════════════════════════════════════════════════════════ */
 function FieldPage({ fieldId, nav }) {
+  const FIELDS = buildFields();
   const field = FIELDS.find(f => f.id === fieldId);
   const [featPlaying, setFeatPlaying] = useState(false);
-  const [modal, setModal] = useState(null);
   if (!field) return null;
 
-  const latest = field.projects[field.latestIndex];
+  const latest = field.projects[0];
 
   return (
     <div className="fade-up">
@@ -578,46 +385,51 @@ function FieldPage({ fieldId, nav }) {
         <p className="fp-tagline">{field.tagline}</p>
       </div>
 
-      {/* أحدث مشروع */}
-      <div className="fp-featured">
-        <div className="fp-feat-inner">
-          <div>
-            <p className="feat-label">أحدث مشروع</p>
-            <p className="feat-eyebrow">{latest.year}</p>
-            <h2 className="feat-title">{latest.title}</h2>
-            <p className="feat-desc">{latest.details.summary || latest.desc}</p>
-            <div className="feat-tags">{latest.tags.map(t => <span key={t} className="tag">{t}</span>)}</div>
-            <button className="btn-ghost" onClick={() => nav("project", fieldId, latest.slug)}>تفاصيل المشروع ←</button>
-          </div>
-          {latest.details.media?.type === "vimeo" ? (
-            <VimeoEmbed id={latest.details.media.id} playing={featPlaying} onPlay={() => setFeatPlaying(true)} />
-          ) : (
-            <div className="feat-placeholder">{fieldIcon(fieldId)}</div>
-          )}
-        </div>
-      </div>
-
-      {/* كل المشاريع */}
-      <div className="fp-all">
-        <p className="fp-all-label">جميع المشاريع — {field.projects.length}</p>
-        <div className="projects-list">
-          {field.projects.map((p, i) => (
-            <div key={p.slug} className="proj-row" onClick={() => nav("project", fieldId, p.slug)} role="button" tabIndex={0} onKeyDown={e => e.key === "Enter" && nav("project", fieldId, p.slug)}>
-              <span className="proj-year">{p.year}</span>
-              <div>
-                <p className="proj-title">{p.title}</p>
-                <p className="proj-desc">{p.desc}</p>
-              </div>
-              <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-end", gap: "8px" }}>
-                <div className="proj-tags">{p.tags.map(t => <span key={t} className="tag">{t}</span>)}</div>
-                <span className="proj-arrow">←</span>
-              </div>
+      {latest ? (
+        <div className="fp-featured">
+          <div className="fp-feat-inner">
+            <div>
+              <p className="feat-label">أحدث مشروع</p>
+              <p className="feat-eyebrow">{latest.year}</p>
+              <h2 className="feat-title">{latest.title}</h2>
+              <p className="feat-desc">{latest.summary || latest.desc}</p>
+              <div className="feat-tags">{(latest.tags || []).map(t => <span key={t} className="tag">{t}</span>)}</div>
+              <button className="btn-ghost" onClick={() => nav("project", fieldId, latest.slug)}>تفاصيل المشروع ←</button>
             </div>
-          ))}
+            {latest.vimeo ? (
+              <VimeoEmbed id={latest.vimeo} playing={featPlaying} onPlay={() => setFeatPlaying(true)} />
+            ) : (
+              <div className="feat-placeholder">{fieldIcon(fieldId)}</div>
+            )}
+          </div>
         </div>
+      ) : null}
+
+      <div className="fp-all">
+        {field.projects.length > 0 ? (
+          <>
+            <p className="fp-all-label">جميع المشاريع — {field.projects.length}</p>
+            <div className="projects-list">
+              {field.projects.map(p => (
+                <div key={p.slug} className="proj-row" onClick={() => nav("project", fieldId, p.slug)} role="button" tabIndex={0} onKeyDown={e => e.key === "Enter" && nav("project", fieldId, p.slug)}>
+                  <span className="proj-year">{p.year}</span>
+                  <div>
+                    <p className="proj-title">{p.title}</p>
+                    <p className="proj-desc">{p.desc}</p>
+                  </div>
+                  <div style={{ display:"flex", flexDirection:"column", alignItems:"flex-end", gap:"8px" }}>
+                    <div className="proj-tags">{(p.tags || []).map(t => <span key={t} className="tag">{t}</span>)}</div>
+                    <span className="proj-arrow">←</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        ) : (
+          <p className="empty-state">لا توجد مشاريع منشورة في هذا المجال بعد.</p>
+        )}
       </div>
 
-      {/* عملت مع — داخل المجال الإبداعي فقط */}
       {field.id === "creative" && field.clients && (
         <div className="clients-bg">
           <p className="clients-label">عملت مع</p>
@@ -630,38 +442,34 @@ function FieldPage({ fieldId, nav }) {
           </div>
         </div>
       )}
-
-      {modal && <VideoModal project={modal} onClose={() => setModal(null)} />}
     </div>
   );
 }
 
 /* ══════════════════════════════════════════════════════════════
-   PROJECT PAGE (blog-style)
+   PROJECT PAGE
 ══════════════════════════════════════════════════════════════ */
 function ProjectPage({ fieldId, slug, nav }) {
-  const field = FIELDS.find(f => f.id === fieldId);
-  const project = field?.projects.find(p => p.slug === slug);
+  const fieldMeta = FIELD_META.find(f => f.id === fieldId);
+  const project = ALL_PROJECTS.find(p => p.slug === slug);
   const [playing, setPlaying] = useState(false);
   if (!project) return null;
-  const d = project.details;
 
   return (
     <div className="fade-up">
       <div className="pp-wrap">
-        <button className="pp-back" onClick={() => nav("field", fieldId)}>← {field.ar}</button>
-        <p className="pp-field">{field.en}</p>
+        <button className="pp-back" onClick={() => nav("field", fieldId)}>← {fieldMeta?.ar}</button>
+        <p className="pp-field">{fieldMeta?.en}</p>
         <h1 className="pp-title">{project.title}</h1>
         <div className="pp-meta">
           <span className="pp-year">{project.year}</span>
-          <div className="pp-tags-row">{project.tags.map(t => <span key={t} className="tag">{t}</span>)}</div>
+          <div className="pp-tags-row">{(project.tags || []).map(t => <span key={t} className="tag">{t}</span>)}</div>
         </div>
 
-        {/* الميديا */}
-        {d.media?.type === "vimeo" ? (
+        {project.vimeo ? (
           <div className="pp-media">
             {playing ? (
-              <iframe src={`https://player.vimeo.com/video/${d.media.id}?autoplay=1`} allow="autoplay; fullscreen" title={project.title} />
+              <iframe src={`https://player.vimeo.com/video/${project.vimeo}?autoplay=1`} allow="autoplay; fullscreen" title={project.title} />
             ) : (
               <div className="feat-play-overlay" onClick={() => setPlaying(true)}>
                 <div className="feat-play-btn">
@@ -672,36 +480,31 @@ function ProjectPage({ fieldId, slug, nav }) {
           </div>
         ) : (
           <div className="pp-placeholder" style={{ marginBottom: "2.5rem" }}>
-            <p>أضف صورة أو رابط ميديا للمشروع من قسم details في ملف البيانات</p>
+            <p>لم تُضَف ميديا لهذا المشروع بعد</p>
           </div>
         )}
 
-        {/* الملخص */}
-        {d.summary ? (
+        {project.summary && (
           <>
             <p className="pp-section-label" style={{ marginTop: 0 }}>ملخص</p>
-            <p className="pp-text">{d.summary}</p>
+            <p className="pp-text">{project.summary}</p>
           </>
-        ) : null}
+        )}
 
-        {/* المشكلة */}
         <p className="pp-section-label">المشكلة</p>
-        {d.problem ? <p className="pp-text">{d.problem}</p> : <p className="pp-empty">لم يُضَف بعد — عدّل details.problem في ملف البيانات</p>}
+        {project.problem ? <p className="pp-text">{project.problem}</p> : <p className="pp-empty">لم يُضَف بعد</p>}
 
-        {/* الحل */}
         <p className="pp-section-label">الحل</p>
-        {d.solution ? <p className="pp-text">{d.solution}</p> : <p className="pp-empty">لم يُضَف بعد — عدّل details.solution</p>}
+        {project.solution ? <p className="pp-text">{project.solution}</p> : <p className="pp-empty">لم يُضَف بعد</p>}
 
-        {/* النتيجة */}
         <p className="pp-section-label">النتيجة</p>
-        {d.outcome ? <p className="pp-text">{d.outcome}</p> : <p className="pp-empty">لم يُضَف بعد — عدّل details.outcome</p>}
+        {project.outcome ? <p className="pp-text">{project.outcome}</p> : <p className="pp-empty">لم يُضَف بعد</p>}
 
-        {/* الروابط */}
-        {d.links?.length > 0 && (
+        {project.links?.length > 0 && (
           <>
             <p className="pp-section-label">روابط</p>
             <div className="pp-links">
-              {d.links.map((l, i) => <a key={i} href={l.url} target="_blank" rel="noreferrer" className="pp-link">↗ {l.label}</a>)}
+              {project.links.map((l, i) => <a key={i} href={l.url} target="_blank" rel="noreferrer" className="pp-link">↗ {l.label}</a>)}
             </div>
           </>
         )}
@@ -716,33 +519,37 @@ function ProjectPage({ fieldId, slug, nav }) {
 function BlogList({ nav }) {
   return (
     <div className="fade-up blog-wrap">
-      <p style={{ fontFamily: "var(--fm)", fontSize: "0.7rem", letterSpacing: "2px", textTransform: "uppercase", color: "var(--ink3)", marginBottom: "0.75rem" }}>Personal</p>
-      <h1 style={{ fontSize: "clamp(2rem,6vw,3.5rem)", fontWeight: 600, letterSpacing: "-1px", marginBottom: "0.5rem" }}>مدوّنة</h1>
-      <p style={{ color: "var(--ink3)", marginBottom: "3rem" }}>أفكار، ملاحظات، وتجارب شخصية.</p>
-      <div className="blog-grid">
-        {POSTS.map(p => (
-          <div key={p.slug} className="post-card" onClick={() => nav("post", p.slug)} role="button" tabIndex={0} onKeyDown={e => e.key === "Enter" && nav("post", p.slug)}>
-            <p className="post-date">{p.date}</p>
-            <h2 className="post-title">{p.title}</h2>
-            <p className="post-excerpt">{p.excerpt}</p>
-            <div className="post-tags">{p.tags.map(t => <span key={t} className="tag">{t}</span>)}</div>
-          </div>
-        ))}
-      </div>
+      <p style={{ fontFamily:"var(--fm)", fontSize:"0.7rem", letterSpacing:"2px", textTransform:"uppercase", color:"var(--ink3)", marginBottom:"0.75rem" }}>Personal</p>
+      <h1 style={{ fontSize:"clamp(2rem,6vw,3.5rem)", fontWeight:600, letterSpacing:"-1px", marginBottom:"0.5rem" }}>مدوّنة</h1>
+      <p style={{ color:"var(--ink3)", marginBottom:"3rem" }}>أفكار، ملاحظات، وتجارب شخصية.</p>
+      {ALL_POSTS.length > 0 ? (
+        <div className="blog-grid">
+          {ALL_POSTS.map(p => (
+            <div key={p.slug} className="post-card" onClick={() => nav("post", p.slug)} role="button" tabIndex={0} onKeyDown={e => e.key === "Enter" && nav("post", p.slug)}>
+              <p className="post-date">{p.date?.slice(0, 10)}</p>
+              <h2 className="post-title">{p.title}</h2>
+              <p className="post-excerpt">{p.excerpt}</p>
+              <div className="post-tags">{(p.tags || []).map(t => <span key={t} className="tag">{t}</span>)}</div>
+            </div>
+          ))}
+        </div>
+      ) : (
+        <p className="empty-state">لا توجد مقالات منشورة بعد.</p>
+      )}
     </div>
   );
 }
 
 function PostPage({ slug, nav }) {
-  const post = POSTS.find(p => p.slug === slug);
+  const post = ALL_POSTS.find(p => p.slug === slug);
   if (!post) return null;
   return (
     <div className="fade-up post-wrap">
       <button className="fp-back" onClick={() => nav("blog")}>← المدوّنة</button>
-      <p style={{ fontFamily: "var(--fm)", fontSize: "0.72rem", color: "var(--ink3)", marginBottom: "0.75rem" }}>{post.date}</p>
-      <h1 style={{ fontSize: "clamp(1.8rem,5vw,2.8rem)", fontWeight: 600, letterSpacing: "-0.8px", marginBottom: "0.75rem" }}>{post.title}</h1>
-      <div style={{ display: "flex", gap: "6px", flexWrap: "wrap", paddingBottom: "2rem", borderBottom: "1px solid var(--rule)" }}>
-        {post.tags.map(t => <span key={t} className="tag">{t}</span>)}
+      <p style={{ fontFamily:"var(--fm)", fontSize:"0.72rem", color:"var(--ink3)", marginBottom:"0.75rem" }}>{post.date?.slice(0,10)}</p>
+      <h1 style={{ fontSize:"clamp(1.8rem,5vw,2.8rem)", fontWeight:600, letterSpacing:"-0.8px", marginBottom:"0.75rem" }}>{post.title}</h1>
+      <div style={{ display:"flex", gap:"6px", flexWrap:"wrap", paddingBottom:"2rem", borderBottom:"1px solid var(--rule)" }}>
+        {(post.tags || []).map(t => <span key={t} className="tag">{t}</span>)}
       </div>
       <p className="post-body">{post.body}</p>
     </div>
@@ -753,7 +560,6 @@ function PostPage({ slug, nav }) {
    ROOT
 ══════════════════════════════════════════════════════════════ */
 export default function App() {
-  // route: { page, fieldId, slug }
   const [route, setRoute] = useState({ page: "home" });
   const [mobOpen, setMobOpen] = useState(false);
 
@@ -764,13 +570,13 @@ export default function App() {
   };
 
   const scrollToContact = () => {
-    if (route.page !== "home") { nav("home"); setTimeout(() => document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" }), 80); }
-    else document.getElementById("contact")?.scrollIntoView({ behavior: "smooth" });
+    if (route.page !== "home") { nav("home"); setTimeout(() => document.getElementById("contact")?.scrollIntoView({ behavior:"smooth" }), 80); }
+    else document.getElementById("contact")?.scrollIntoView({ behavior:"smooth" });
     setMobOpen(false);
   };
 
   const navItems = [
-    { label: "الأعمال", action: () => { nav("home"); setTimeout(() => document.getElementById("work")?.scrollIntoView({ behavior: "smooth" }), 80); } },
+    { label: "الأعمال", action: () => { nav("home"); setTimeout(() => document.getElementById("work")?.scrollIntoView({ behavior:"smooth" }), 80); } },
     { label: "مدوّنة",  action: () => nav("blog") },
     { label: "تواصل",   action: scrollToContact },
   ];
@@ -778,15 +584,11 @@ export default function App() {
   return (
     <>
       <style>{CSS}</style>
-
-      {/* NAV */}
       <nav className="nav">
-        <a className="nav-logo" onClick={() => nav("home")} href="#" style={{ textDecoration: "none" }}>
-          Feras<span>.</span>
-        </a>
+        <a className="nav-logo" onClick={() => nav("home")} href="#" style={{ textDecoration:"none" }}>Feras<span>.</span></a>
         <div className="nav-right">
           {navItems.map((n, i) => (
-            <span key={n.label} style={{ display: "contents" }}>
+            <span key={n.label} style={{ display:"contents" }}>
               {i > 0 && <div className="nav-divider" />}
               <button className="nav-link" onClick={n.action}>{n.label}</button>
             </span>
@@ -801,7 +603,6 @@ export default function App() {
         {navItems.map(n => <button key={n.label} className="mob-link" onClick={n.action}>{n.label}</button>)}
       </div>
 
-      {/* PAGES */}
       {route.page === "home"    && <HomePage    nav={nav} scrollToContact={scrollToContact} />}
       {route.page === "field"   && <FieldPage   fieldId={route.fieldId} nav={nav} />}
       {route.page === "project" && <ProjectPage fieldId={route.fieldId} slug={route.slug} nav={nav} />}
@@ -810,7 +611,7 @@ export default function App() {
 
       <footer>
         <p><span>Feras Almalki</span> © 2025</p>
-        <p style={{ fontFamily: "var(--fm)" }}>ferask0.github.io</p>
+        <p style={{ fontFamily:"var(--fm)" }}>feras00.netlify.app</p>
       </footer>
     </>
   );

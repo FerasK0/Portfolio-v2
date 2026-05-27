@@ -34,6 +34,10 @@ collections:
         name: vimeo
         widget: string
         required: false
+      - label: "منشور"
+        name: published
+        widget: boolean
+        default: true
 
   - name: posts
     label: المدونة
@@ -57,3 +61,7 @@ collections:
       - label: التاقات
         name: tags
         widget: list
+      - label: "منشور"
+        name: published
+        widget: boolean
+        default: true

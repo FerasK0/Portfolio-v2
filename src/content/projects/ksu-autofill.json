@@ -1,0 +1,18 @@
+{
+  "slug": "ksu-autofill",
+  "title": "Auto Fill — استمارة KSU",
+  "year": "2023",
+  "field": "academic",
+  "tags": [
+    "JavaScript",
+    "Automation"
+  ],
+  "desc": "أداة تعبئة تلقائية لاستمارة جامعة الملك سعود.",
+  "summary": "أداة تعمل في الخلفية لتعبئة استمارات KSU تلقائياً.",
+  "problem": "",
+  "solution": "",
+  "outcome": "",
+  "vimeo": "",
+  "links": [],
+  "published": true
+}
