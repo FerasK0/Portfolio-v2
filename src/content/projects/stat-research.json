@@ -1,18 +1,19 @@
 {
+  "vimeo": "",
+  "summary": "",
   "slug": "stat-research",
+  "published": true,
+  "desc": "مشاريع بحثية في تحليل مجموعات بيانات.",
+  "outcome": "",
+  "cover": "/images/h5_forecast_comparison_hajj.png",
   "title": "تحليل بيانات إحصائي",
-  "year": "2024",
-  "field": "academic",
   "tags": [
     "R",
     "Statistics"
   ],
-  "desc": "مشاريع بحثية في تحليل مجموعات بيانات.",
-  "summary": "",
-  "problem": "",
   "solution": "",
-  "outcome": "",
-  "vimeo": "",
   "links": [],
-  "published": true
+  "field": "academic",
+  "year": "2024",
+  "problem": ""
 }
