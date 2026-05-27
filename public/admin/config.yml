@@ -1,31 +1,59 @@
-backend
-  name github
-  repo FerasK0Portfolio-v2
-  branch main
+backend:
+  name: github
+  repo: FerasK0/Portfolio-v2
+  branch: main
 
-media_folder publicimages
-public_folder images
+media_folder: public/images
+public_folder: /images
 
-collections
-  - name projects
-    label المشاريع
-    folder srccontentprojects
-    create true
-    fields
-      - { label العنوان, name title, widget string }
-      - { label السنة, name year, widget string }
-      - { label الوصف, name desc, widget text }
-      - { label المجال, name field, widget select, options [academic, tech, creative] }
-      - { label التاقات, name tags, widget list }
-      - { label رابط Vimeo, name vimeo, widget string, required false }
+collections:
+  - name: projects
+    label: المشاريع
+    folder: src/content/projects
+    create: true
+    extension: json
+    format: json
+    fields:
+      - label: العنوان
+        name: title
+        widget: string
+      - label: السنة
+        name: year
+        widget: string
+      - label: الوصف
+        name: desc
+        widget: text
+      - label: المجال
+        name: field
+        widget: select
+        options: [academic, tech, creative]
+      - label: التاقات
+        name: tags
+        widget: list
+      - label: رابط Vimeo
+        name: vimeo
+        widget: string
+        required: false
 
-  - name posts
-    label المدونة
-    folder srccontentposts
-    create true
-    fields
-      - { label العنوان, name title, widget string }
-      - { label التاريخ, name date, widget datetime }
-      - { label المقتطف, name excerpt, widget text }
-      - { label المحتوى, name body, widget markdown }
-      - { label التاقات, name tags, widget list }
+  - name: posts
+    label: المدونة
+    folder: src/content/posts
+    create: true
+    extension: json
+    format: json
+    fields:
+      - label: العنوان
+        name: title
+        widget: string
+      - label: التاريخ
+        name: date
+        widget: datetime
+      - label: المقتطف
+        name: excerpt
+        widget: text
+      - label: المحتوى
+        name: body
+        widget: markdown
+      - label: التاقات
+        name: tags
+        widget: list
