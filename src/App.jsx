@@ -242,7 +242,7 @@ const CSS = `
 }
 
 html{scroll-behavior:smooth}
-body{font-family:var(--ff);background:var(--paper);color:var(--ink);direction:rtl;line-height:1.65;-webkit-font-smoothing:antialiased}
+body{font-family:var(--ff);background:var(--paper);color:var(--ink);direction:rtl;line-height:1.65;-webkit-font-smoothing:antialiased;max-width:1200px;margin:0 auto}
 ::-webkit-scrollbar{width:3px}
 ::-webkit-scrollbar-thumb{background:var(--ink3)}
 
@@ -382,10 +382,10 @@ body{font-family:var(--ff);background:var(--paper);color:var(--ink);direction:rt
 
 /* CONTACT */
 .contact-wrap{max-width:880px;margin:0 auto;padding:0 2rem 8rem}
-.contact-big{font-size:clamp(1.8rem,5vw,4rem);font-weight:600;letter-spacing:-1.5px;line-height:1.1;color:var(--ink);margin-bottom:2.5rem;word-break:break-word}
-.contact-big a{color:var(--accent);text-decoration:none;transition:opacity 0.18s}
+.contact-big{font-size:clamp(1.4rem,4vw,3.5rem);font-weight:600;letter-spacing:-1px;line-height:1.15;color:var(--ink);margin-bottom:2.5rem;word-break:break-word}
+.contact-big a{color:var(--accent);text-decoration:none;transition:opacity 0.18s;font-size:clamp(0.95rem,2.5vw,2rem)}
 .contact-big a:hover{opacity:0.75}
-.contact-socials{display:flex;flex-wrap:wrap;gap:0;border-top:1px solid var(--rule);padding-top:1.5rem}
+.contact-socials{display:flex;flex-wrap:wrap;gap:0;border-top:1px solid var(--rule);padding-top:1.5rem;align-items:center}
 .csoc{font-family:var(--fm);font-size:0.78rem;color:var(--ink3);text-decoration:none;transition:color 0.18s;padding:0 1.25rem;border-right:1px solid var(--rule)}
 .csoc:first-child{padding-right:0}
 .csoc:last-child{border-right:none}
