@@ -242,12 +242,12 @@ const CSS = `
 }
 
 html{scroll-behavior:smooth}
-body{font-family:var(--ff);background:var(--paper);color:var(--ink);direction:rtl;line-height:1.65;-webkit-font-smoothing:antialiased;max-width:1200px;margin:0 auto}
+body{font-family:var(--ff);background:var(--paper);color:var(--ink);direction:rtl;line-height:1.65;-webkit-font-smoothing:antialiased}
 ::-webkit-scrollbar{width:3px}
 ::-webkit-scrollbar-thumb{background:var(--ink3)}
 
 /* NAV */
-.nav{position:fixed;top:0;inset-inline:0;z-index:200;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;background:var(--paper);border-bottom:1px solid var(--rule)}
+.nav{position:fixed;top:0;left:0;right:0;z-index:200;height:56px;display:flex;align-items:center;justify-content:space-between;padding:0 2rem;background:var(--paper);border-bottom:1px solid var(--rule)}
 .nav-logo{font-family:var(--fm);font-size:1rem;font-weight:500;letter-spacing:-0.5px;color:var(--ink);cursor:pointer;text-decoration:none}
 .nav-logo span{color:var(--accent)}
 .nav-right{display:flex;align-items:center;gap:0}
@@ -256,7 +256,7 @@ body{font-family:var(--ff);background:var(--paper);color:var(--ink);direction:rt
 .nav-divider{width:1px;height:18px;background:var(--rule)}
 .hamburger{display:none;flex-direction:column;gap:4px;background:none;border:none;cursor:pointer;padding:6px}
 .hamburger span{display:block;width:20px;height:1.5px;background:var(--ink);transition:var(--t)}
-.mob-menu{display:none;position:fixed;top:56px;inset-inline:0;background:var(--paper);border-bottom:1px solid var(--rule);padding:0.5rem 0;z-index:199;flex-direction:column}
+.mob-menu{display:none;position:fixed;top:56px;left:0;right:0;background:var(--paper);border-bottom:1px solid var(--rule);padding:0.5rem 0;z-index:199;flex-direction:column}
 .mob-menu.open{display:flex}
 .mob-link{padding:12px 2rem;font-size:0.9rem;color:var(--ink2);background:none;border:none;cursor:pointer;text-align:right;font-family:var(--ff);transition:color 0.18s}
 .mob-link:hover{color:var(--ink)}
@@ -284,7 +284,7 @@ body{font-family:var(--ff);background:var(--paper);color:var(--ink);direction:rt
 .section-title{font-size:clamp(1.6rem,4vw,2.2rem);font-weight:600;letter-spacing:-0.5px;color:var(--ink)}
 
 /* FEATURED STRIP */
-.featured-strip{background:var(--paper2);border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+.featured-strip{background:var(--paper2);border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);width:100%}
 .featured-inner{max-width:880px;margin:0 auto;padding:3rem 2rem;display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:center}
 .feat-label{font-family:var(--fm);font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:1rem}
 .feat-eyebrow{font-family:var(--fm);font-size:0.7rem;color:var(--ink3);margin-bottom:0.4rem}
@@ -318,7 +318,7 @@ body{font-family:var(--ff);background:var(--paper);color:var(--ink);direction:rt
 .fp-eyebrow{font-family:var(--fm);font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:0.75rem}
 .fp-title{font-size:clamp(2.5rem,7vw,5rem);font-weight:600;letter-spacing:-1.5px;color:var(--ink);margin-bottom:0.5rem}
 .fp-tagline{font-size:1rem;color:var(--ink3)}
-.fp-featured{background:var(--paper2);border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+.fp-featured{background:var(--paper2);border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);width:100%}
 .fp-feat-inner{max-width:880px;margin:0 auto;padding:3rem 2rem;display:grid;grid-template-columns:1fr 1fr;gap:3rem;align-items:start}
 
 /* PROJECTS LIST */
@@ -335,7 +335,7 @@ body{font-family:var(--ff);background:var(--paper);color:var(--ink);direction:rt
 .proj-arrow{font-size:0.9rem;color:var(--ink3);padding-top:3px}
 
 /* CLIENTS (inside creative page) */
-.clients-bg{background:var(--paper2);border-top:1px solid var(--rule);overflow:hidden;padding:3rem 0}
+.clients-bg{background:var(--paper2);border-top:1px solid var(--rule);overflow:hidden;padding:3rem 0;width:100%}
 .clients-label{font-family:var(--fm);font-size:0.7rem;letter-spacing:2px;text-transform:uppercase;color:var(--ink3);text-align:center;margin-bottom:2rem}
 .clients-scroll{overflow:hidden;position:relative}
 .clients-scroll::before,.clients-scroll::after{content:'';position:absolute;top:0;bottom:0;width:100px;z-index:2}
