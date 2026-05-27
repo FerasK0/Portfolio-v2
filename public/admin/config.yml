@@ -13,6 +13,7 @@ collections:
     create: true
     extension: json
     format: json
+    preview_path: "/"
     fields:
       - label: العنوان
         name: title
@@ -20,7 +21,7 @@ collections:
       - label: السنة
         name: year
         widget: string
-      - label: الوصف
+      - label: الوصف المختصر
         name: desc
         widget: text
       - label: المجال
@@ -34,7 +35,34 @@ collections:
         name: vimeo
         widget: string
         required: false
-      - label: "منشور"
+      - label: ملخص
+        name: summary
+        widget: text
+        required: false
+      - label: المشكلة
+        name: problem
+        widget: markdown
+        required: false
+      - label: الحل
+        name: solution
+        widget: markdown
+        required: false
+      - label: النتيجة
+        name: outcome
+        widget: markdown
+        required: false
+      - label: صورة غلاف
+        name: cover
+        widget: image
+        required: false
+      - label: روابط
+        name: links
+        widget: list
+        required: false
+        fields:
+          - { label: النص, name: label, widget: string }
+          - { label: الرابط, name: url, widget: string }
+      - label: منشور
         name: published
         widget: boolean
         default: true
@@ -58,10 +86,14 @@ collections:
       - label: المحتوى
         name: body
         widget: markdown
+      - label: صورة غلاف
+        name: cover
+        widget: image
+        required: false
       - label: التاقات
         name: tags
         widget: list
-      - label: "منشور"
+      - label: منشور
         name: published
         widget: boolean
         default: true
