@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import ReactMarkdown from "react-markdown";
 
 /* ══════════════════════════════════════════════════════════════
    استيراد المحتوى من ملفات JSON (يُدار من لوحة التحكم)
@@ -198,6 +199,23 @@ body{font-family:var(--ff);background:var(--paper);color:var(--ink);direction:rt
 .pp-placeholder{background:var(--paper2);border:1px dashed var(--paper3);border-radius:4px;padding:3rem 2rem;text-align:center;margin-bottom:2.5rem}
 .pp-placeholder p{font-size:0.85rem;color:var(--ink3)}
 
+.pp-cover{width:100%;max-height:420px;object-fit:cover;border-radius:4px;margin-bottom:2.5rem;display:block}
+.md-body{font-size:1rem;color:var(--ink2);line-height:1.8;font-weight:300}
+.md-body p{margin-bottom:1rem}
+.md-body h1,.md-body h2,.md-body h3{font-weight:600;color:var(--ink);margin:2rem 0 0.75rem;letter-spacing:-0.3px}
+.md-body h1{font-size:1.4rem}.md-body h2{font-size:1.2rem}.md-body h3{font-size:1rem}
+.md-body ul,.md-body ol{padding-right:1.5rem;margin-bottom:1rem}
+.md-body li{margin-bottom:0.4rem}
+.md-body img{max-width:100%;border-radius:4px;margin:1.5rem 0;display:block}
+.md-body a{color:var(--accent);text-decoration:underline}
+.md-body strong{font-weight:600;color:var(--ink)}
+.md-body em{font-style:italic}
+.md-body blockquote{border-right:3px solid var(--accent);padding-right:1rem;margin:1.5rem 0;color:var(--ink3)}
+.md-body code{font-family:var(--fm);font-size:0.85em;background:var(--paper3);padding:2px 6px;border-radius:2px}
+.md-body pre{background:var(--paper3);padding:1rem;border-radius:4px;overflow-x:auto;margin-bottom:1rem}
+.md-body pre code{background:none;padding:0}
+.md-body hr{border:none;border-top:1px solid var(--rule);margin:2rem 0}
+
 /* BLOG */
 .blog-wrap{max-width:880px;margin:0 auto;padding:100px 2rem 6rem}
 .blog-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:1.5rem;margin-top:2rem}
@@ -210,7 +228,6 @@ body{font-family:var(--ff);background:var(--paper);color:var(--ink);direction:rt
 
 /* POST PAGE */
 .post-wrap{max-width:640px;margin:0 auto;padding:100px 2rem 6rem}
-.post-body{font-size:1rem;color:var(--ink2);line-height:1.9;font-weight:300;margin-top:2rem;white-space:pre-wrap}
 
 /* EMPTY STATE */
 .empty-state{text-align:center;padding:4rem 2rem;color:var(--ink3);font-size:0.9rem}
@@ -478,6 +495,8 @@ function ProjectPage({ fieldId, slug, nav }) {
               </div>
             )}
           </div>
+        ) : project.cover ? (
+          <img src={project.cover} alt={project.title} className="pp-cover" />
         ) : (
           <div className="pp-placeholder" style={{ marginBottom: "2.5rem" }}>
             <p>لم تُضَف ميديا لهذا المشروع بعد</p>
@@ -492,13 +511,13 @@ function ProjectPage({ fieldId, slug, nav }) {
         )}
 
         <p className="pp-section-label">المشكلة</p>
-        {project.problem ? <p className="pp-text">{project.problem}</p> : <p className="pp-empty">لم يُضَف بعد</p>}
+        {project.problem ? <div className="md-body"><ReactMarkdown>{project.problem}</ReactMarkdown></div> : <p className="pp-empty">لم يُضَف بعد</p>}
 
         <p className="pp-section-label">الحل</p>
-        {project.solution ? <p className="pp-text">{project.solution}</p> : <p className="pp-empty">لم يُضَف بعد</p>}
+        {project.solution ? <div className="md-body"><ReactMarkdown>{project.solution}</ReactMarkdown></div> : <p className="pp-empty">لم يُضَف بعد</p>}
 
         <p className="pp-section-label">النتيجة</p>
-        {project.outcome ? <p className="pp-text">{project.outcome}</p> : <p className="pp-empty">لم يُضَف بعد</p>}
+        {project.outcome ? <div className="md-body"><ReactMarkdown>{project.outcome}</ReactMarkdown></div> : <p className="pp-empty">لم يُضَف بعد</p>}
 
         {project.links?.length > 0 && (
           <>
@@ -548,10 +567,13 @@ function PostPage({ slug, nav }) {
       <button className="fp-back" onClick={() => nav("blog")}>← المدوّنة</button>
       <p style={{ fontFamily:"var(--fm)", fontSize:"0.72rem", color:"var(--ink3)", marginBottom:"0.75rem" }}>{post.date?.slice(0,10)}</p>
       <h1 style={{ fontSize:"clamp(1.8rem,5vw,2.8rem)", fontWeight:600, letterSpacing:"-0.8px", marginBottom:"0.75rem" }}>{post.title}</h1>
-      <div style={{ display:"flex", gap:"6px", flexWrap:"wrap", paddingBottom:"2rem", borderBottom:"1px solid var(--rule)" }}>
+      <div style={{ display:"flex", gap:"6px", flexWrap:"wrap", paddingBottom:"2rem", borderBottom:"1px solid var(--rule)", marginBottom:"2rem" }}>
         {(post.tags || []).map(t => <span key={t} className="tag">{t}</span>)}
       </div>
-      <p className="post-body">{post.body}</p>
+      {post.cover && <img src={post.cover} alt={post.title} className="pp-cover" />}
+      <div className="md-body">
+        <ReactMarkdown>{post.body}</ReactMarkdown>
+      </div>
     </div>
   );
 }
