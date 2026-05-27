@@ -1,18 +1,18 @@
 {
+  "vimeo": "",
+  "summary": "بوت يدعم تنزيل الميديا من يوتيوب وتويتر وانستغرام.",
   "slug": "media-bot",
+  "published": false,
+  "desc": "بوت تيليغرام لتنزيل الميديا من منصات متعددة.",
+  "outcome": "",
   "title": "Media Downloader Bot",
-  "year": "2024",
-  "field": "tech",
   "tags": [
     "Python",
     "Telegram API"
   ],
-  "desc": "بوت تيليغرام لتنزيل الميديا من منصات متعددة.",
-  "summary": "بوت يدعم تنزيل الميديا من يوتيوب وتويتر وانستغرام.",
-  "problem": "",
   "solution": "",
-  "outcome": "",
-  "vimeo": "",
   "links": [],
-  "published": true
+  "field": "tech",
+  "year": "2024",
+  "problem": ""
 }
